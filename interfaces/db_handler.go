@@ -1,5 +1,5 @@
 package interfaces
 
-type DbHandler interface {
-	FindByID(id int) (interface{}, error)
+type IDbHandler interface {
+	Create(model interface{}) (error)
 }
