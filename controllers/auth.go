@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/go-playground/validator/v10"
-	"github.com/jackc/pgx/v5/pgconn"
 	interfaces "github.com/khuongnguyenBlue/slacky/interfaces/services"
 	"github.com/khuongnguyenBlue/slacky/transport"
 	"github.com/labstack/echo/v4"
@@ -30,12 +29,6 @@ func (controller *AuthController) Register(c echo.Context) (error) {
 
 	user, err := controller.registrationService.Register(*registrationRequest)
 	if err != nil {
-		if pgError, ok := err.(*pgconn.PgError); ok {
-			if pgError.Code == "23505" {
-				return echo.NewHTTPError(400, "email already exists")
-			}
-		}
-
 		return err
 	}
 

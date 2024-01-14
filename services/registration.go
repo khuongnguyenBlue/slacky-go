@@ -1,9 +1,11 @@
 package services
 
 import (
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/khuongnguyenBlue/slacky/interfaces/repositories"
 	"github.com/khuongnguyenBlue/slacky/models"
 	"github.com/khuongnguyenBlue/slacky/transport"
+	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -23,6 +25,12 @@ func (service *RegistrationService) Register(request transport.RegistrationReque
 
 	user, err := service.CreateUser(request.Email, hash)
 	if err != nil {
+		if pgError, ok := err.(*pgconn.PgError); ok {
+			if pgError.Code == "23505" {
+				return nil, echo.NewHTTPError(400, "email already exists")
+			}
+		}
+		
 		return nil, err
 	}
 
