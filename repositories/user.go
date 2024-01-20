@@ -22,3 +22,13 @@ func (repository *UserRepository) CreateUser(email string, hash string) (*models
 
 	return &user, nil
 }
+
+func (repository *UserRepository) GetUserByEmail(email string) (*models.User, error) {
+	user := models.User{}
+	err := repository.FindByField(&user, "email", email)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}

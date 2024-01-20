@@ -3,6 +3,8 @@ package infrastructures
 import (
 	"fmt"
 
+	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/khuongnguyenBlue/slacky/transport"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -34,11 +36,21 @@ func NewPgHandler() *PgHandler {
 	return &PgHandler{Conn: db}
 }
 
-func (handler *PgHandler) Create(model interface{}) error {
-	result := handler.Conn.Create(model)
-	if result.Error != nil {
-		return result.Error
+func (handler *PgHandler) HandleError(res *gorm.DB) error {
+	if res.Error != nil && res.Error != gorm.ErrRecordNotFound {
+		err := res.Error.(*pgconn.PgError)
+		return transport.NewErrorBody(err.Message, err.Code)
 	}
 
 	return nil
+}
+
+func (handler *PgHandler) Create(model interface{}) error {
+	result := handler.Conn.Create(model)
+	return handler.HandleError(result)
+}
+
+func (handler *PgHandler) FindByField(model interface{}, field string, value string) (error) {
+	result := handler.Conn.Where(fmt.Sprintf("%s = ?", field), value).First(model)
+	return handler.HandleError(result)
 }

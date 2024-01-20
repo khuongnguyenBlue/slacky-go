@@ -8,12 +8,12 @@ import (
 )
 
 type AuthController struct {
-	registrationService interfaces.IRegistrationService
+	authService interfaces.IAuthService
 	validator		   *validator.Validate
 }
 
-func NewAuthController(registrationService interfaces.IRegistrationService, validator *validator.Validate) *AuthController {
-	return &AuthController{registrationService, validator}
+func NewAuthController(authService interfaces.IAuthService, validator *validator.Validate) *AuthController {
+	return &AuthController{authService, validator}
 }
 
 func (controller *AuthController) Register(c echo.Context) (error) {
@@ -27,10 +27,29 @@ func (controller *AuthController) Register(c echo.Context) (error) {
 		return err
 	}
 
-	user, err := controller.registrationService.Register(*registrationRequest)
+	user, err := controller.authService.Register(*registrationRequest)
 	if err != nil {
 		return err
 	}
 
 	return c.JSON(200, transport.SuccessResponse(transport.ToRegistrationData(*user)))
+}
+
+func (controller *AuthController) Login(c echo.Context) (error) {
+	loginRequest := new(transport.LoginRequest)
+	if err := c.Bind(loginRequest); err != nil {
+		return err
+	}
+
+	err := controller.validator.Struct(loginRequest)
+	if err != nil {
+		return err
+	}
+
+	token, err := controller.authService.Login(*loginRequest)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(200, transport.SuccessResponse(transport.LoginData{Token: token}))
 }

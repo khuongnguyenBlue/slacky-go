@@ -20,8 +20,8 @@ var controllersSet = wire.NewSet(
 )
 
 var sericesSet = wire.NewSet(
-	services.NewRegistrationService,
-	wire.Bind(new(serviceInterface.IRegistrationService), new(*services.RegistrationService)),
+	services.NewAuthService,
+	wire.Bind(new(serviceInterface.IAuthService), new(*services.AuthService)),
 )
 
 var repositoriesSet = wire.NewSet(

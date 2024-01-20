@@ -61,6 +61,11 @@ func ErrorHandler(next echo.HandlerFunc) echo.HandlerFunc {
 					})
 					return c.JSON(httpErr.Code, response)
 				}
+
+				if errBody, ok := err.(transport.ErrorBody); ok {
+					response.Errors = append(response.Errors, errBody)
+					return c.JSON(errBody.HttpCode, response)
+				}
 				
 				response.Errors = append(response.Errors, transport.ErrorBody{
 					Message: err.Error(),
