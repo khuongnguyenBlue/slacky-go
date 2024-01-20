@@ -23,9 +23,9 @@ import (
 func initializeApp() *app {
 	pgHandler := infrastructures.NewPgHandler()
 	userRepository := repositories.NewUserRepository(pgHandler)
-	registrationService := services.NewRegistrationService(userRepository)
+	authService := services.NewAuthService(userRepository)
 	validate := newValidator()
-	authController := controllers.NewAuthController(registrationService, validate)
+	authController := controllers.NewAuthController(authService, validate)
 	mainApp := &app{
 		authController: authController,
 	}
@@ -36,7 +36,7 @@ func initializeApp() *app {
 
 var controllersSet = wire.NewSet(controllers.NewAuthController)
 
-var sericesSet = wire.NewSet(services.NewRegistrationService, wire.Bind(new(services2.IRegistrationService), new(*services.RegistrationService)))
+var sericesSet = wire.NewSet(services.NewAuthService, wire.Bind(new(services2.IAuthService), new(*services.AuthService)))
 
 var repositoriesSet = wire.NewSet(repositories.NewUserRepository, wire.Bind(new(repositories2.IUserRepository), new(*repositories.UserRepository)), infrastructures.NewPgHandler, wire.Bind(new(interfaces.IDbHandler), new(*infrastructures.PgHandler)))
 

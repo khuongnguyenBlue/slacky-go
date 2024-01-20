@@ -2,7 +2,19 @@ package transport
 
 type ErrorBody struct {
 	Message string `json:"message"`
-	// Code int `json:"code"`
+	Code string `json:"code"`
+	HttpCode int `json:"-"`
+}
+
+func NewErrorBody(message string, code string) ErrorBody {
+	return ErrorBody{
+		Message: message,
+		Code: code,
+	}
+}
+
+func (e ErrorBody) Error() string {
+	return e.Message
 }
 
 // define response struct

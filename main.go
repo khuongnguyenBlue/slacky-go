@@ -24,6 +24,7 @@ func main() {
 	app := initializeApp()
 	auth := e.Group("/auth")
 	auth.POST("/register", app.authController.Register)
+	auth.POST("/login", app.authController.Login)
 	port := viper.GetString("PORT")
 	e.Logger.Fatal(e.Start(port))
 }
